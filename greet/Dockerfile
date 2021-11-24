@@ -12,7 +12,8 @@ ADD go.mod .
 ADD go.sum .
 RUN go mod download
 COPY . .
-RUN go build -ldflags="-s -w" -o /app/greet ./greet/greet.go
+COPY ./etc /app/etc
+RUN go build -ldflags="-s -w" -o /app/greet ./greet.go
 
 
 FROM alpine
@@ -22,5 +23,6 @@ ENV TZ Asia/Shanghai
 
 WORKDIR /app
 COPY --from=builder /app/greet /app/greet
+COPY --from=builder /app/etc /app/etc
 
-CMD ["./greet"]
+CMD ["./greet", "-f", "etc/greet-api.yaml"]
